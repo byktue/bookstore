@@ -1,0 +1,11 @@
+simplejson
+lxml
+codecov
+coverage
+flask
+pre - commit
+pytest
+PyJWT
+requests
+pymongo
+python-dotenv
