@@ -20,7 +20,6 @@ class Buyer:
         for id_count_pair in book_id_and_count:
             books.append({"id": id_count_pair[0], "count": id_count_pair[1]})
         json = {"user_id": self.user_id, "store_id": store_id, "books": books}
-        # print(simplejson.dumps(json))
         url = urljoin(self.url_prefix, "new_order")
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
@@ -46,5 +45,17 @@ class Buyer:
         }
         url = urljoin(self.url_prefix, "add_funds")
         headers = {"token": self.token}
+        r = requests.post(url, headers=headers, json=json)
+        return r.status_code
+
+    def receive_order(self, order_id: str) -> int:
+        """新增收货访问方法：调用买家收货接口"""
+        json = {
+            "user_id": self.user_id,
+            "order_id": order_id,
+            "token": self.token  # 传递token用于身份验证
+        }
+        url = urljoin(self.url_prefix, "receive_order")
+        headers = {"token": self.token}  # 保持原有header传token的兼容方式
         r = requests.post(url, headers=headers, json=json)
         return r.status_code

@@ -19,7 +19,6 @@ class Seller:
             "user_id": self.seller_id,
             "store_id": store_id,
         }
-        # print(simplejson.dumps(json))
         url = urljoin(self.url_prefix, "create_store")
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
@@ -32,7 +31,6 @@ class Seller:
             "book_info": book_info.__dict__,
             "stock_level": stock_level,
         }
-        # print(simplejson.dumps(json))
         url = urljoin(self.url_prefix, "add_book")
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
@@ -47,8 +45,20 @@ class Seller:
             "book_id": book_id,
             "add_stock_level": add_stock_num,
         }
-        # print(simplejson.dumps(json))
         url = urljoin(self.url_prefix, "add_stock_level")
         headers = {"token": self.token}
+        r = requests.post(url, headers=headers, json=json)
+        return r.status_code
+
+    def ship_order(self, store_id: str, order_id: str) -> int:
+        """新增发货访问方法：调用卖家发货接口"""
+        json = {
+            "seller_id": self.seller_id,
+            "store_id": store_id,
+            "order_id": order_id,
+            "token": self.token  # 传递token用于身份验证
+        }
+        url = urljoin(self.url_prefix, "ship_order")
+        headers = {"token": self.token}  # 保持原有header传token的兼容方式
         r = requests.post(url, headers=headers, json=json)
         return r.status_code
