@@ -1,0 +1,37 @@
+2025-11-05 23:06:46,015 [MainThread  ] [INFO ]  开始启动图书电商服务...
+2025-11-05 23:06:46,019 [MainThread  ] [INFO ]  连接数据库: mongodb://localhost:27017/
+2025-11-05 23:06:46,237 [MainThread  ] [INFO ]  未发现 store_id/book_id 为空的无效记录
+2025-11-05 23:06:46,903 [MainThread  ] [INFO ]  未发现 (store_id, book_id) 重复记录
+2025-11-05 23:06:46,904 [MainThread  ] [INFO ]  books 集合 (store_id, book_id) 唯一索引创建成功
+2025-11-05 23:06:46,904 [MainThread  ] [INFO ]  books 集合全文索引创建成功
+2025-11-05 23:06:46,906 [MainThread  ] [INFO ]  MongoDB 初始化成功
+2025-11-05 23:06:46,913 [MainThread  ] [INFO ]  服务初始化完成，准备启动...
+2025-11-05 23:06:46,921 [MainThread  ] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2025-11-05 23:10:54,859 [MainThread  ] [INFO ]  开始启动图书电商服务...
+2025-11-05 23:10:54,860 [MainThread  ] [INFO ]  连接数据库: mongodb://localhost:27017/
+2025-11-05 23:10:55,050 [MainThread  ] [INFO ]  未发现 store_id/book_id 为空的无效记录
+2025-11-05 23:10:55,649 [MainThread  ] [INFO ]  未发现 (store_id, book_id) 重复记录
+2025-11-05 23:10:55,651 [MainThread  ] [INFO ]  books 集合 (store_id, book_id) 唯一索引创建成功
+2025-11-05 23:10:55,651 [MainThread  ] [INFO ]  books 集合全文索引创建成功
+2025-11-05 23:10:55,652 [MainThread  ] [INFO ]  MongoDB 初始化成功
+2025-11-05 23:10:55,658 [MainThread  ] [INFO ]  服务初始化完成，准备启动...
+2025-11-05 23:10:55,664 [MainThread  ] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2025-11-06 00:01:27,312 [MainThread  ] [INFO ]  数据库初始化成功
+2025-11-06 00:01:27,332 [MainThread  ] [INFO ]  服务启动中...
+2025-11-06 00:01:27,337 [MainThread  ] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2025-11-06 00:02:15,789 [Thread-1 (ru] [INFO ]  数据库初始化成功
+2025-11-06 00:02:15,808 [Thread-1 (ru] [INFO ]  服务启动中...
+2025-11-06 00:02:15,821 [Thread-1 (ru] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2025-11-06 00:03:34,209 [Thread-1 (ru] [INFO ]  数据库初始化成功
+2025-11-06 00:03:34,227 [Thread-1 (ru] [INFO ]  服务启动中...
+2025-11-06 00:03:34,236 [Thread-1 (ru] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2025-11-06 00:06:59,950 [MainThread  ] [INFO ]  数据库初始化成功
+2025-11-06 00:06:59,973 [MainThread  ] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2025-11-06 00:07:28,730 [Thread-1    ] [INFO ]  数据库初始化成功
+2025-11-06 00:07:28,759 [Thread-1    ] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2025-11-06 00:07:30,679 [MainThread  ] [INFO ]  测试环境服务已启动
+2025-11-06 00:08:53,611 [Thread-1    ] [INFO ]  数据库初始化成功
+2025-11-06 00:08:53,635 [Thread-1    ] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2025-11-06 00:08:55,600 [MainThread  ] [INFO ]  测试环境服务已启动
+2025-11-06 00:08:55,642 [Thread-2 (ru] [INFO ]  数据库初始化成功
+2025-11-06 00:08:55,653 [Thread-2 (ru] [INFO ]   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
