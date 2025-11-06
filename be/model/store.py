@@ -15,7 +15,7 @@ class Store:
             )
             self.client.admin.command('ping')  # 验证连接
             self.db = self.client['bookstore']
-            self.clean_critical_invalid_data()  # 清理关键无效数据
+            self.clean_critical_invalid_data()  # 仅清理关键无效数据（不删有效记录）
             self.init_collections()
             logging.info("MongoDB 初始化成功")
         except Exception as e:
@@ -23,21 +23,21 @@ class Store:
             raise
 
     def clean_critical_invalid_data(self):
-        """清理会导致索引创建失败的关键无效数据"""
+        """仅清理会导致索引创建失败的关键无效数据，保留所有有效记录"""
         try:
-            # 删除 store_id 或 book_id 为空的记录
+            # 1. 只删除 store_id 或 book_id 为 null/空字符串的记录（这些记录一定会导致索引失败）
             null_count = self.db.books.delete_many({
                 "$or": [
-                    {"store_id": {"$in": [None, ""]}},
+                    {"store_id": {"$in": [None, ""]}},  # 严格匹配空值
                     {"book_id": {"$in": [None, ""]}}
                 ]
             }).deleted_count
             if null_count > 0:
-                logging.warning(f"已删除 {null_count} 条 store_id/book_id 为空的无效记录")
+                logging.warning(f"已删除 {null_count} 条 store_id/book_id 为空的无效记录（这些记录会导致索引失败）")
             else:
                 logging.info("未发现 store_id/book_id 为空的无效记录")
 
-            # 检测重复记录（仅日志提示，不自动删除）
+            # 2. 重复记录处理：只记录重复项，不自动删除（避免误删有效数据）
             duplicates = list(self.db.books.aggregate([
                 {
                     "$group": {
@@ -50,7 +50,11 @@ class Store:
             ]))
 
             if duplicates:
-                logging.warning(f"发现 {len(duplicates)} 组 (store_id, book_id) 重复记录，需手动处理")
+                logging.warning(f"发现 {len(duplicates)} 组 (store_id, book_id) 重复记录，需手动处理：")
+                for i, dup in enumerate(duplicates, 1):
+                    store_id = dup["_id"]["store_id"]
+                    book_id = dup["_id"]["book_id"]
+                    logging.warning(f"  第{i}组：store_id={store_id}, book_id={book_id}，共{dup['count']}条重复")
             else:
                 logging.info("未发现 (store_id, book_id) 重复记录")
 
@@ -59,7 +63,7 @@ class Store:
             raise
 
     def init_collections(self):
-        # 用户相关索引
+        # 1. 用户相关索引
         self.db.user.create_index('user_id', unique=True, background=True)
         self.db.user_store.create_index(
             [('user_id', 1), ('store_id', 1)],
@@ -67,7 +71,8 @@ class Store:
             background=True
         )
 
-        # 图书相关索引
+        # 2. 图书相关索引（安全模式：不自动删除旧索引，避免影响数据）
+        # 尝试创建唯一索引（若仍有重复会报错，但保留数据）
         try:
             self.db.books.create_index(
                 [('store_id', 1), ('book_id', 1)],
@@ -78,12 +83,14 @@ class Store:
         except DuplicateKeyError as e:
             logging.error(
                 "\n===== 索引创建失败：存在重复的 (store_id, book_id) 记录 ====="
-                "\n请手动处理重复记录后重试"
+                "\n请手动处理上述警告中列出的重复记录，处理方式："
+                "\n1. 保留一条有效记录，删除其余重复项"
+                "\n2. 确保保留的记录中 store_id 和 book_id 不为空"
                 "\n错误详情：%s", e
             )
-            raise
+            raise  # 终止初始化，需手动处理重复数据
 
-        # 全文搜索索引
+        # 全文搜索索引（仅创建，不删除旧索引）
         try:
             self.db.books.create_index(
                 [
@@ -104,12 +111,12 @@ class Store:
             logging.info("books 集合全文索引创建成功")
         except OperationFailure as e:
             if e.code == 85:
-                logging.info("books 集合全文索引已存在")
+                logging.info("books 集合全文索引已存在，无需重复创建")
             else:
                 logging.error(f"全文索引创建失败: {str(e)}")
                 raise
 
-        # 订单相关索引
+        # 3. 订单相关索引
         self.db.new_order.create_index('order_id', unique=True, background=True)
         self.db.new_order_detail.create_index(
             [('order_id', 1), ('book_id', 1)],
@@ -118,7 +125,6 @@ class Store:
         )
 
     def get_db(self) -> Database:
-        """提供数据库连接实例"""
         return self.db
 
     def close(self):
@@ -131,23 +137,22 @@ database_instance: Store = None
 init_completed_event = threading.Event()
 
 def init_database(mongo_uri: str = "mongodb://localhost:27017/"):
-    """初始化数据库（供 serve.py 调用）"""
     global database_instance
     if database_instance is None:
         database_instance = Store(mongo_uri)
         init_completed_event.set()
     return database_instance
 
-def get_db() -> Database:  # 改回 get_db
-    """对外提供数据库连接的入口"""
+def get_db() -> Database:
     init_completed_event.wait()
     if database_instance is None:
         raise Exception("数据库未初始化")
     return database_instance.get_db()
+
 def close_database():
-    """关闭数据库连接"""
     global database_instance
     if database_instance:
         database_instance.close()
         database_instance = None
         init_completed_event.clear()
+
